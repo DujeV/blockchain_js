@@ -5,10 +5,12 @@ function Blockchain() {
   this.chain = [];
 
   //storage of all the new transactions that are created before they are placed in block
-  this.newTransactions = [];
+  this.pendingTransactions = [];
 }
 
-//method for creating new block and adding it to blockchain
+//** ------------------------
+//** method for creating new block and adding it to blockchain
+//** ------------------------
 Blockchain.prototype.createNewBlock = function (
   nonce,
   previousBlockHash,
@@ -24,7 +26,7 @@ Blockchain.prototype.createNewBlock = function (
   };
 
   //clearing newTransaction array
-  this.newTransactions = [];
+  this.pendingTransactions = [];
 
   //adding block to chain array
   this.chain.push(newBlock);
@@ -32,10 +34,32 @@ Blockchain.prototype.createNewBlock = function (
   return newBlock;
 };
 
-//getting the last block method
+//** ------------------------
+//**getting the last block method
+//** ------------------------
 Blockchain.prototype.getLastBlock = function () {
   //indexing the last element of the array
   return this.chain[this.chain.length - 1];
+};
+
+//** ------------------------
+//**Creating the createNewTransaction method
+//** ------------------------
+Blockchain.prototype.createNewTransaction = function (
+  amount,
+  sender,
+  recipient
+) {
+  const newTransaction = {
+    amount: amount,
+    sender: sender,
+    recipient: recipient,
+  };
+
+  this.pendingTransactions.push(newTransaction);
+
+  //which block we will be able to find the new transaction
+  return this.getlastBlock()["index"] + 1;
 };
 
 module.exports = Blockchain;
