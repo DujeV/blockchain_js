@@ -59,7 +59,7 @@ Blockchain.prototype.createNewTransaction = function (
   this.pendingTransactions.push(newTransaction);
 
   //which block we will be able to find the new transaction
-  return this.getlastBlock()["index"] + 1;
+  return this.getLastBlock()["index"] + 1;
 };
 
 module.exports = Blockchain;
