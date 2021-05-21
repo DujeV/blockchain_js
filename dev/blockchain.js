@@ -19,7 +19,7 @@ Blockchain.prototype.createNewBlock = function (
   const newBlock = {
     index: this.chain.length + 1,
     timestamp: Date.now(),
-    transactions: this.transactions,
+    transactions: this.pendingTransactions,
     nonce: nonce,
     hash: hash,
     previousBlockHash: previousBlockHash,
