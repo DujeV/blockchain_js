@@ -9,7 +9,7 @@ function Blockchain() {
 }
 
 //** ------------------------
-//** method for creating new block and adding it to blockchain
+//** Method for creating new block and adding it to blockchain
 //** ------------------------
 Blockchain.prototype.createNewBlock = function (
   nonce,
@@ -35,7 +35,7 @@ Blockchain.prototype.createNewBlock = function (
 };
 
 //** ------------------------
-//**getting the last block method
+//**Getting the last block method
 //** ------------------------
 Blockchain.prototype.getLastBlock = function () {
   //indexing the last element of the array
@@ -62,4 +62,12 @@ Blockchain.prototype.createNewTransaction = function (
   return this.getLastBlock()["index"] + 1;
 };
 
+
+//** ------------------------
+//**Hashing the data
+//** ------------------------
+
+Blockchain.prototype.hashBlock = function (blockdata)) {
+
+}
 module.exports = Blockchain;
