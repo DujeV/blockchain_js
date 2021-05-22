@@ -1,4 +1,5 @@
 //main object of the blockchain
+const sha256 = require("sha256");
 
 function Blockchain() {
   //storage of all the blocks that we mine
@@ -62,12 +63,22 @@ Blockchain.prototype.createNewTransaction = function (
   return this.getLastBlock()["index"] + 1;
 };
 
-
 //** ------------------------
-//**Hashing the data
+//**Hashing the data of single block
 //** ------------------------
 
-Blockchain.prototype.hashBlock = function (blockdata)) {
+Blockchain.prototype.hashBlock = function (
+  previousBlockHash,
+  currentBlockData,
+  nonce
+) {
+  //previousBlockHash is already string, nonce is number, currentBlockData is object - array of transactions
+  const dataAsString =
+    previousBlockHash + nonce.tostring() + JSON.stringify(currentBlockData);
 
-}
+  //creating hash
+  const hash = sha256(dataAsString);
+  return hash;
+};
+
 module.exports = Blockchain;
