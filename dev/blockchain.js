@@ -81,4 +81,24 @@ Blockchain.prototype.hashBlock = function (
   return hash;
 };
 
+//** ------------------------
+//**Proof of Work method - generating hash until we got hash that starts with '0000'
+//** ------------------------
+
+Blockchain.prototype.proofOfWork = function (
+  previousBlockHash,
+  currentBlockData
+) {
+  // setting nonce to 0 and generating first hash
+  let nonce = 0;
+  let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+
+  //if generated hash doesn't start with '0000', increase nonce and generate hashBlock again
+  while (hash.substring(0, 4) !== "0000") {
+    nonce++;
+    hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+  }
+  return nonce;
+};
+
 module.exports = Blockchain;
