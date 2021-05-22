@@ -74,7 +74,7 @@ Blockchain.prototype.hashBlock = function (
 ) {
   //previousBlockHash is already string, nonce is number, currentBlockData is object - array of transactions
   const dataAsString =
-    previousBlockHash + nonce.tostring() + JSON.stringify(currentBlockData);
+    previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
 
   //creating hash
   const hash = sha256(dataAsString);
