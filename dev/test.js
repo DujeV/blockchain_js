@@ -20,6 +20,8 @@ const currentBlockData = [
     recipient: "ZBCG25SKDB763MQ",
   },
 ];
-const nonce = 100;
+
+let nonce = 7664;
+//console.log(dukatoni.proofOfWork(previousBlockHash, currentBlockData));
 
 console.log(dukatoni.hashBlock(previousBlockHash, currentBlockData, nonce));
