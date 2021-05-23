@@ -1,6 +1,10 @@
 var express = require("express");
 var app = express();
+const bodyParser = require("body-parser");
 
+// if a request comes in with JSON data or with form data, parse that data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 //** ------------------------
 //** There will be 3 endpoints in API
 //  1. /blockchain -> fetch entire blockchain structure
@@ -10,7 +14,10 @@ var app = express();
 
 app.get("/blockchain", function (req, res) {});
 
-app.post("/transaction", function (req, res) {});
+app.post("/transaction", function (req, res) {
+  console.log(req.body);
+  res.send(`The amount of the transaction is ${req.body.amount} dukatoni.`);
+});
 
 app.get("/mine", function (req, res) {});
 
