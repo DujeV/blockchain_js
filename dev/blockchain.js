@@ -1,12 +1,17 @@
-//main object of the blockchain
 const sha256 = require("sha256");
 
+//** ------------------------
+//** Main object of the blockchain
+//** ------------------------
 function Blockchain() {
   //storage of all the blocks that we mine
   this.chain = [];
 
   //storage of all the new transactions that are created before they are placed in block
   this.pendingTransactions = [];
+
+  //genesis block - first block that goes into chain array
+  this.createNewBlock(100, "0", "0");
 }
 
 //** ------------------------
