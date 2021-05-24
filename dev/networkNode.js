@@ -2,12 +2,13 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const Blockchain = require("./blockchain");
-const uuid = require("uuid/v1");
+const { v1: uuid } = require("uuid");
 
 const dukatoni = new Blockchain();
 
 //to prevent dashes - split everything and then rejoin
 const nodeAddress = uuid().split("-").join("");
+console.log(nodeAddress);
 
 // if a request comes in with JSON data or with form data, parse that data
 app.use(bodyParser.json());
@@ -54,6 +55,10 @@ app.get("/mine", function (req, res) {
     nonce
   );
 
+  //everytime someone mines a new block, he gets reward for creating a new block
+  // if sender has address '00' -> mining reward
+  dukatoni.createNewTransaction(12.5, "00", nodeAddress);
+
   //creating new block
   const newBlock = dukatoni.createNewBlock(nonce, previousBlockHash, blockHash);
 
@@ -62,10 +67,6 @@ app.get("/mine", function (req, res) {
     note: "New block mined successfully !",
     block: newBlock,
   });
-
-  //everytime someone mines a new block, he gets reward for creating a new block
-  // if sender has address '00' -> mining reward
-  dukatoni.createNewTransaction(12.5, "00", nodeAddress);
 });
 
 app.listen(3000, function () {
