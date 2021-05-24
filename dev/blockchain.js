@@ -65,6 +65,7 @@ Blockchain.prototype.createNewTransaction = function (
   this.pendingTransactions.push(newTransaction);
 
   //which block we will be able to find the new transaction
+  //method returns the block number or the index that new transaction will be added to.
   return this.getLastBlock()["index"] + 1;
 };
 
