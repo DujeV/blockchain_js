@@ -14,6 +14,9 @@ console.log(nodeAddress);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// different ports value to create decentralized network
+const port = process.argv[2];
+
 //** ------------------------
 //** There will be 3 endpoints in API
 //  1. /blockchain -> fetch entire blockchain structure
@@ -69,6 +72,6 @@ app.get("/mine", function (req, res) {
   });
 });
 
-app.listen(3000, function () {
-  console.log("Listening on port 3000...");
+app.listen(port, function () {
+  console.log(`Listening on port ${port}`);
 });
