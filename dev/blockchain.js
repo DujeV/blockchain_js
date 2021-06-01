@@ -1,5 +1,5 @@
 const sha256 = require("sha256");
-
+const currentNodeUrl = process.argv[3];
 //** ------------------------
 //** Main object of the blockchain
 //** ------------------------
@@ -10,6 +10,11 @@ function Blockchain() {
   //storage of all the new transactions that are created before they are placed in block
   this.pendingTransactions = [];
 
+  //defining currentNodeUrl
+  this.currentNodeUrl = currentNodeUrl;
+
+  //all of the other nodes that are inside of our network
+  this.networkNodes = [];
   //genesis block - first block that goes into chain array
   this.createNewBlock(100, "0", "0");
 }
