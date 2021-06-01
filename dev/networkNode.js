@@ -138,7 +138,7 @@ app.post("/register-node", function (req, res) {
     res.json({ note: "New node registered successfully. " });
   } else {
     res.json({
-      note: "newNodeUrl is the URL of current node or this node is already in networkNode array",
+      note: "newNode registration faild ... newNodeUrl is the URL of current node or this node is already in networkNode array",
     });
   }
 });
@@ -147,7 +147,25 @@ app.post("/register-node", function (req, res) {
 //** Register multiple nodes at once
 //** ------------------------
 
-app.post("/register-nodes-bulk", function (req, res) {});
+app.post("/register-nodes-bulk", function (req, res) {
+  const allNetworkNodes = req.body.allNetworkNodes;
+  allNetworkNodes.forEach((networkNodeUrl) => {
+    //true or false
+    const nodeNotAllreadyPresent =
+      dukatoni.networkNodes.indexOf(networkNodeUrl) === -1;
+
+    const notCurrentNode = dukatoni.currentNodeUrl !== networkNodeUrl;
+
+    if (nodeNotAllreadyPresent && notCurrentNode) {
+      dukatoni.networkNodes.push(networkNodeUrl);
+      res.json({ note: "Bulk registration successful." });
+    } else {
+      res.json({
+        note: "Bulk registration failed ... networkNodeUrl is the URL of current node or this node is already in networkNode array",
+      });
+    }
+  });
+});
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
