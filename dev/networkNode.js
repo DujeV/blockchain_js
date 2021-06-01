@@ -84,6 +84,7 @@ app.post("/register-and-broadcast-node", function (req, res) {
   if (dukatoni.networkNodes.indexOf(newNodeUrl) == -1)
     dukatoni.networkNodes.push(newNodeUrl);
 
+  //broadcasting newNodeUrl to the rest of the nodes in network
   const regNodesPromises = [];
   dukatoni.networkNodes.forEach((networkNodeUrl) => {
     //options that are used for each request
@@ -96,6 +97,7 @@ app.post("/register-and-broadcast-node", function (req, res) {
     regNodesPromises.push(rp(requestOptions));
   });
 
+  //register all of the network nodes that are already present inside of network with new node.
   Promise.all(regNodesPromises)
     .then((data) => {
       const bulkRegisterOptions = {
@@ -119,7 +121,22 @@ app.post("/register-and-broadcast-node", function (req, res) {
 // accepting the new node
 //** ------------------------
 
-app.post("/register-node", function (req, res) {});
+app.post("/register-node", function (req, res) {
+  //using the value of newNodeUrl that is sent to req.body
+  const newNodeUrl = req.body.newNodeUrl;
+
+  //is the newNodeUrl actually the URL of the current node that we're on
+  const notCurrentNode = dukatoni.currentNodeUrl !== newNodeUrl;
+
+  //true or false
+  const nodeNotAlreadyPresent =
+    dukatoni.networkNodes.indexOf(newNodeUrl) === -1;
+
+  if (nodeNotAlreadyPresent && notCurrentNode)
+    dukatoni.networkNodes.push(newNodeUrl);
+
+  res.json({ note: "New node registered successfully. " });
+});
 
 //** ------------------------
 //** Register multiple nodes at once
