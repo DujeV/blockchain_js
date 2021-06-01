@@ -96,9 +96,22 @@ app.post("/register-and-broadcast-node", function (req, res) {
     regNodesPromises.push(rp(requestOptions));
   });
 
-  Promise.all(regNodesPromises).then((data) => {
-    //use data
-  });
+  Promise.all(regNodesPromises)
+    .then((data) => {
+      const bulkRegisterOptions = {
+        uri: newNodeUrl + "/register-nodes-bulk",
+        method: "POST",
+        body: {
+          allNetworkNodes: [...dukatoni.networkNodes, dukatoni.currentNodeUrl],
+        },
+        json: true,
+      };
+
+      return rp(bulkRegisterOptions);
+    })
+    .then((data) => {
+      res.json({ note: "New Node registered with network successfully" });
+    });
 });
 
 //** ------------------------
@@ -112,7 +125,7 @@ app.post("/register-node", function (req, res) {});
 //** Register multiple nodes at once
 //** ------------------------
 
-app.post("/register-node-bulk", function (req, res) {});
+app.post("/register-nodes-bulk", function (req, res) {});
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);

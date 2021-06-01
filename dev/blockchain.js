@@ -1,5 +1,6 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
+
 //** ------------------------
 //** Main object of the blockchain
 //** ------------------------
@@ -15,6 +16,7 @@ function Blockchain() {
 
   //all of the other nodes that are inside of our network
   this.networkNodes = [];
+
   //genesis block - first block that goes into chain array
   this.createNewBlock(100, "0", "0");
 }
