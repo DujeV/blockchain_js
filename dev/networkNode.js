@@ -72,6 +72,28 @@ app.get("/mine", function (req, res) {
   });
 });
 
+//** ------------------------
+//** Register a node (on its own server) and broadcast it to whole newtwork
+// passing the URL of the node we want to register on the req body
+//** ------------------------
+
+app.post("/register-and-broadcast-node", function (req, res) {
+  const newNodeUrl = req.body.newNodeUrl;
+});
+
+//** ------------------------
+//** Register a node with a network
+// accepting the new node
+//** ------------------------
+
+app.post("/register-node", function (req, res) {});
+
+//** ------------------------
+//** Register multiple nodes at once
+//** ------------------------
+
+app.post("/register-node-bulk", function (req, res) {});
+
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
