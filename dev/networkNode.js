@@ -132,10 +132,15 @@ app.post("/register-node", function (req, res) {
   const nodeNotAlreadyPresent =
     dukatoni.networkNodes.indexOf(newNodeUrl) === -1;
 
-  if (nodeNotAlreadyPresent && notCurrentNode)
+  if (nodeNotAlreadyPresent && notCurrentNode) {
     dukatoni.networkNodes.push(newNodeUrl);
 
-  res.json({ note: "New node registered successfully. " });
+    res.json({ note: "New node registered successfully. " });
+  } else {
+    res.json({
+      note: "newNodeUrl is the URL of current node or this node is already in networkNode array",
+    });
+  }
 });
 
 //** ------------------------
