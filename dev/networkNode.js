@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const Blockchain = require("./blockchain");
 const { v1: uuid } = require("uuid");
+const rp = require("request-promise");
 
 const dukatoni = new Blockchain();
 
@@ -74,11 +75,30 @@ app.get("/mine", function (req, res) {
 
 //** ------------------------
 //** Register a node (on its own server) and broadcast it to whole newtwork
-// passing the URL of the node we want to register on the req body
 //** ------------------------
 
 app.post("/register-and-broadcast-node", function (req, res) {
+  // passing the URL of the node we want to register on the req body
   const newNodeUrl = req.body.newNodeUrl;
+
+  if (dukatoni.networkNodes.indexOf(newNodeUrl) == -1)
+    dukatoni.networkNodes.push(newNodeUrl);
+
+  const regNodesPromises = [];
+  dukatoni.networkNodes.forEach((networkNodeUrl) => {
+    //options that are used for each request
+    const requestOptions = {
+      uri: networkNodeUrl + "/register-node",
+      method: "POST",
+      body: { newNodeUrl: newNodeUrl },
+      json: true,
+    };
+    regNodesPromises.push(rp(requestOptions));
+  });
+
+  Promise.all(regNodesPromises).then((data) => {
+    //use data
+  });
 });
 
 //** ------------------------
