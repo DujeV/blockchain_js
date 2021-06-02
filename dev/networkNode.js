@@ -9,7 +9,6 @@ const dukatoni = new Blockchain();
 
 //to prevent dashes - split everything and then rejoin
 const nodeAddress = uuid().split("-").join("");
-console.log(nodeAddress);
 
 // if a request comes in with JSON data or with form data, parse that data
 app.use(bodyParser.json());
@@ -129,18 +128,11 @@ app.post("/register-node", function (req, res) {
   const notCurrentNode = dukatoni.currentNodeUrl !== newNodeUrl;
 
   //true or false
-  const nodeNotAlreadyPresent =
-    dukatoni.networkNodes.indexOf(newNodeUrl) === -1;
+  const nodeNotAlreadyPresent = dukatoni.networkNodes.indexOf(newNodeUrl) == -1;
 
-  if (nodeNotAlreadyPresent && notCurrentNode) {
+  if (nodeNotAlreadyPresent && notCurrentNode)
     dukatoni.networkNodes.push(newNodeUrl);
-
-    res.json({ note: "New node registered successfully. " });
-  } else {
-    res.json({
-      note: "newNode registration faild ... newNodeUrl is the URL of current node or this node is already in networkNode array",
-    });
-  }
+  res.json({ note: "New node registered successfully. " });
 });
 
 //** ------------------------
@@ -151,20 +143,14 @@ app.post("/register-nodes-bulk", function (req, res) {
   const allNetworkNodes = req.body.allNetworkNodes;
   allNetworkNodes.forEach((networkNodeUrl) => {
     //true or false
-    const nodeNotAllreadyPresent =
-      dukatoni.networkNodes.indexOf(networkNodeUrl) === -1;
-
+    const nodeNotAlreadyPresent =
+      dukatoni.networkNodes.indexOf(networkNodeUrl) == -1;
     const notCurrentNode = dukatoni.currentNodeUrl !== networkNodeUrl;
-
-    if (nodeNotAllreadyPresent && notCurrentNode) {
+    if (nodeNotAlreadyPresent && notCurrentNode)
       dukatoni.networkNodes.push(networkNodeUrl);
-      res.json({ note: "Bulk registration successful." });
-    } else {
-      res.json({
-        note: "Bulk registration failed ... networkNodeUrl is the URL of current node or this node is already in networkNode array",
-      });
-    }
   });
+
+  res.json({ note: "Bulk registration successful." });
 });
 
 app.listen(port, function () {
