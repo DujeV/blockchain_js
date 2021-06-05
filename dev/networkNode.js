@@ -72,6 +72,8 @@ app.get("/mine", function (req, res) {
   });
 });
 
+//*! BUILDING DECENTRALIZED NETWORK
+
 //** ------------------------
 //** Register a node (on its own server) and broadcast it to whole newtwork
 //** ------------------------

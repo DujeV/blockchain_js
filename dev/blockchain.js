@@ -1,5 +1,6 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
+const { v1: uuid } = require("uuid");
 
 //** ------------------------
 //** Main object of the blockchain
@@ -56,7 +57,7 @@ Blockchain.prototype.getLastBlock = function () {
 };
 
 //** ------------------------
-//**Creating the createNewTransaction method
+//**Creating new transactions and broadcasting them
 //** ------------------------
 Blockchain.prototype.createNewTransaction = function (
   amount,
@@ -67,14 +68,13 @@ Blockchain.prototype.createNewTransaction = function (
     amount: amount,
     sender: sender,
     recipient: recipient,
+    transactionId: uuid().split("-").join(""),
   };
 
-  this.pendingTransactions.push(newTransaction);
-
-  //which block we will be able to find the new transaction
-  //method returns the block number or the index that new transaction will be added to.
-  return this.getLastBlock()["index"] + 1;
+  return newTransaction;
 };
+
+Blockchain.prototype.addTransactionToPendingTransaction;
 
 //** ------------------------
 //**Hashing the data of single block
