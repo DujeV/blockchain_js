@@ -74,7 +74,14 @@ Blockchain.prototype.createNewTransaction = function (
   return newTransaction;
 };
 
-Blockchain.prototype.addTransactionToPendingTransaction;
+Blockchain.prototype.addTransactionToPendingTransaction = function (
+  transactionObj
+) {
+  this.pendingTransactions.push(transactionObj);
+
+  //return the index of the block to which the transaction is added
+  return this.getLastBlock()["index"] + 1;
+};
 
 //** ------------------------
 //**Hashing the data of single block
