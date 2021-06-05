@@ -29,12 +29,11 @@ app.get("/blockchain", function (req, res) {
 });
 
 app.post("/transaction", function (req, res) {
-  const blockIndex = dukatoni.createNewTransaction(
-    req.body.amount,
-    req.body.sender,
-    req.body.recipient
-  );
-  res.json({ note: `Transaction will be added in block ${blockIndex}.` });
+  const newTransaction = req.body;
+  const blockIndex =
+    dukatoni.addTransactionToPendingTransaction(newTransaction);
+
+  res.json({ note: `Transaction will be added in block ${blockIndex}` });
 });
 
 app.get("/mine", function (req, res) {
