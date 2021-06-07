@@ -63,7 +63,7 @@ app.get("/mine", function (req, res) {
   const requestPromises = [];
   dukatoni.networkNodes.forEach((networkNodeUrl) => {
     const requestOptions = {
-      uri: networkNodeUrl + "/recieve-new-block",
+      uri: networkNodeUrl + "/receive-new-block",
       method: "POST",
       body: { newBlock: newBlock },
       json: true,
