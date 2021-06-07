@@ -148,6 +148,9 @@ Blockchain.prototype.chainIsValid = function (blockchain) {
       validChain = false;
 
     if (blockHash.substring(0, 4) !== "0000") validChain = false;
+
+    console.log("previousBlockHash =>", prevBlock["hash"]);
+    console.log("currentBlockHash =>", currentBlock["hash"]);
   }
 
   //first block in blockchain

@@ -244,51 +244,55 @@ app.post("/register-nodes-bulk", function (req, res) {
 //** ------------------------
 //*! Consensus algorithm -> compare one node to all the other nodes inside of the network
 //** ------------------------
-//** ------------------------
-//** chainIsValidMethod
-//validate the other chains inside of the network
-//comparing them to the chain that is hosted on the current node.
-//** ------------------------
 
-Blockchain.prototype.chainIsValid = function (blockchain) {
-  const validChain = true;
-  for (var i = 1; i < blockchain.length; i++) {
-    const currentBlock = blockchain[i];
-    const prevBlock = blockchain[i - 1];
+app.get("/consensus", function (rreq, res) {
+  const requestPromises = [];
+  dukatoni.networkNodes.forEach((networkNodeUrl) => {
+    const requestOptions = {
+      uri: networkNodeUrl + "/blockchain",
+      method: "GET",
+      json: true,
+    };
+    requestPromises.push(rp(requestOptions));
+  });
 
-    //hashblock() method accepts parameters: previousBlockhash, currentBlockData and the nonce
-    const blockHash = this.hashBlock(
-      prevBlock["hash"],
-      {
-        transactions: currentBlock["transactions"],
-        index: currentBlock["index"],
-      },
-      currentBlock["nonce"]
-    );
+  Promise.all(requestPromises).then((blockchains) => {
+    const currentChainLength = dukatoni.chain.length;
+    let maxChainLength = currentChainLength;
+    let newLongestChain = null;
+    let newPendingTransactions = null;
 
-    if (currentBlock["previousBlockHash"] !== prevBlock["hash"])
-      validChain = false;
+    blockchains.forEach((blockchain) => {
+      if (blockchain.chain.length > maxChainLength) {
+        maxChainLength = blockchain.chain.length;
+        newLongestChain = blockchain.chain;
+        newPendingTransactions = blockchain.pendingTransactions;
+      }
+    });
 
-    if (blockHash.substring(0, 4) !== "0000") validChain = false;
-    return validChain;
-  }
-
-  //first block in blockchain
-  const genesisBlock = blockchain[0];
-  const correctPreviousBlockHash = genesisBlock[previousBlockHash] === "0";
-  const correctHash = genesisBlock["hash"] === "0";
-  const correctNonce = genesisBlock["nonce"] === 100;
-
-  const correctTransactions = genesisBlock["transactions"].length === 0;
-
-  if (
-    !correctPreviousBlockHash ||
-    !correctHash ||
-    !correctNonce ||
-    !correctTransactions
-  )
-    validChain = false;
-};
+    //if there is no newLongestChain meaning
+    //and if there is a new longest chain but that new chain is not valid
+    // then the current chain is the longest
+    if (
+      !newLongestChain ||
+      (newLongestChain && !dukatoni.chainIsValid(newLongestChain))
+    ) {
+      res.json({
+        note: "Current chain has not been replaced",
+        chain: dukatoni.chain,
+      });
+    }
+    //otherwise replace current chain with the longest one
+    else {
+      dukatoni.chain = newLongestChain;
+      dukatoni.pendingTransactions = newPendingTransactions;
+      res.json({
+        note: "This chain has been replaced",
+        chain: dukatoni.chain,
+      });
+    }
+  });
+});
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
