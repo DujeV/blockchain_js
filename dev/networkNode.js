@@ -36,6 +36,40 @@ app.post("/transaction", function (req, res) {
   res.json({ note: `Transaction will be added in block ${blockIndex}` });
 });
 
+//** ------------------------
+//*! Create transaction and broadcast it
+//** ------------------------
+
+app.post("/transaction/broadcast", function (req, res) {
+  const newTransaction = dukatoni.createNewTransaction(
+    req.body.amount,
+    req.body.sender,
+    req.body.recipient
+  );
+
+  dukatoni.addTransactionToPendingTransaction(newTransaction);
+
+  const requestPromises = [];
+
+  dukatoni.networkNodes.forEach((networkNodeUrl) => {
+    const requestOptions = {
+      uri: networkNodeUrl + "/transaction",
+      method: "POST",
+      body: newTransaction,
+      json: true,
+    };
+    requestPromises.push(rp(requestOptions));
+  });
+
+  Promise.all(requestPromises).then((data) => {
+    res.json({ note: "Transaction created and broadcast successfully" });
+  });
+});
+
+//** ------------------------
+//*! Mine block and broadcast it
+//** ------------------------
+
 app.get("/mine", function (req, res) {
   //  to get a blockHash:
   //  1.get the previuous block hash
@@ -123,8 +157,9 @@ app.post("/receive-new-block", function (req, res) {
   }
 });
 
+//** ------------------------
 //*! BUILDING DECENTRALIZED NETWORK
-
+//** ------------------------
 //** ------------------------
 //** Register a node (on its own server) and broadcast it to whole newtwork
 //** ------------------------
@@ -206,37 +241,54 @@ app.post("/register-nodes-bulk", function (req, res) {
   res.json({ note: "Bulk registration successful." });
 });
 
-//*! TRANSACTIONS BROADCASTING
-
 //** ------------------------
-//** Create transaction and broadcast it
+//*! Consensus algorithm -> compare one node to all the other nodes inside of the network
+//** ------------------------
+//** ------------------------
+//** chainIsValidMethod
+//validate the other chains inside of the network
+//comparing them to the chain that is hosted on the current node.
 //** ------------------------
 
-app.post("/transaction/broadcast", function (req, res) {
-  const newTransaction = dukatoni.createNewTransaction(
-    req.body.amount,
-    req.body.sender,
-    req.body.recipient
-  );
+Blockchain.prototype.chainIsValid = function (blockchain) {
+  const validChain = true;
+  for (var i = 1; i < blockchain.length; i++) {
+    const currentBlock = blockchain[i];
+    const prevBlock = blockchain[i - 1];
 
-  dukatoni.addTransactionToPendingTransaction(newTransaction);
+    //hashblock() method accepts parameters: previousBlockhash, currentBlockData and the nonce
+    const blockHash = this.hashBlock(
+      prevBlock["hash"],
+      {
+        transactions: currentBlock["transactions"],
+        index: currentBlock["index"],
+      },
+      currentBlock["nonce"]
+    );
 
-  const requestPromises = [];
+    if (currentBlock["previousBlockHash"] !== prevBlock["hash"])
+      validChain = false;
 
-  dukatoni.networkNodes.forEach((networkNodeUrl) => {
-    const requestOptions = {
-      uri: networkNodeUrl + "/transaction",
-      method: "POST",
-      body: newTransaction,
-      json: true,
-    };
-    requestPromises.push(rp(requestOptions));
-  });
+    if (blockHash.substring(0, 4) !== "0000") validChain = false;
+    return validChain;
+  }
 
-  Promise.all(requestPromises).then((data) => {
-    res.json({ note: "Transaction created and broadcast successfully" });
-  });
-});
+  //first block in blockchain
+  const genesisBlock = blockchain[0];
+  const correctPreviousBlockHash = genesisBlock[previousBlockHash] === "0";
+  const correctHash = genesisBlock["hash"] === "0";
+  const correctNonce = genesisBlock["nonce"] === 100;
+
+  const correctTransactions = genesisBlock["transactions"].length === 0;
+
+  if (
+    !correctPreviousBlockHash ||
+    !correctHash ||
+    !correctNonce ||
+    !correctTransactions
+  )
+    validChain = false;
+};
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
