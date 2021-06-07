@@ -297,7 +297,13 @@ app.get("/consensus", function (rreq, res) {
 //** ------------------------
 //*! Block explorer endpoints
 //** ------------------------
-app.get("/block/:blockHash", function (req, res) {});
+app.get("/block/:blockHash", function (req, res) {
+  const blockHash = req.params.blockHash;
+  const correctBlock = dukatoni.getBlock(blockHash);
+  res.json({
+    block: correctBlock,
+  });
+});
 
 app.get("/transaction/:transactionId", function (req, res) {});
 
