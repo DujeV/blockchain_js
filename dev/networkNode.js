@@ -57,10 +57,6 @@ app.get("/mine", function (req, res) {
     nonce
   );
 
-  //everytime someone mines a new block, he gets reward for creating a new block
-  // if sender has address '00' -> mining reward
-  dukatoni.createNewTransaction(12.5, "00", nodeAddress);
-
   //creating new block
   const newBlock = dukatoni.createNewBlock(nonce, previousBlockHash, blockHash);
 
@@ -76,6 +72,8 @@ app.get("/mine", function (req, res) {
     requestPromises.push(rp(requestOptions));
   });
 
+  //everytime someone mines a new block, he gets reward for creating a new block
+  // if sender has address '00' -> mining reward
   Promise.all(requestPromises)
     .then((data) => {
       const requestOptions = {
@@ -97,6 +95,32 @@ app.get("/mine", function (req, res) {
         block: newBlock,
       });
     });
+});
+
+app.post("/receive-new-block", function (req, res) {
+  const newBlock = req.body.newBlock;
+  const lastBlock = dukatoni.getLastBlock();
+
+  //check if the hash of the last block in the chain is equal to previousBlockHash in newBlock instance
+  const correctHash = lastBlock.hash === newBlock.previousBlockHash;
+
+  //check if the newBlock has correct index -> one index above lastBlock index
+  const correctIndex = lastBlock["index"] + 1 === newBlock["index"];
+
+  if (correctHash && correctIndex) {
+    dukatoni.chain.push(newBlock);
+    dukatoni.pendingTransactions = [];
+
+    res.json({
+      note: "New block received and accepted",
+      newBlock: newBlock,
+    });
+  } else {
+    res.json({
+      note: "New block rejected.",
+      newBlock: newBlock,
+    });
+  }
 });
 
 //*! BUILDING DECENTRALIZED NETWORK
