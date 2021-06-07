@@ -64,11 +64,39 @@ app.get("/mine", function (req, res) {
   //creating new block
   const newBlock = dukatoni.createNewBlock(nonce, previousBlockHash, blockHash);
 
-  //response
-  res.json({
-    note: "New block mined successfully !",
-    block: newBlock,
+  const requestPromises = [];
+  dukatoni.networkNodes.forEach((networkNodeUrl) => {
+    const requestOptions = {
+      uri: networkNodeUrl + "/recieve-new-block",
+      method: "POST",
+      body: { newBlock: newBlock },
+      json: true,
+    };
+
+    requestPromises.push(rp(requestOptions));
   });
+
+  Promise.all(requestPromises)
+    .then((data) => {
+      const requestOptions = {
+        uri: dukatoni.currentNodeUrl + "/transaction/broadcast",
+        method: "POST",
+        body: {
+          amount: 12.5,
+          sender: "00",
+          recipient: nodeAddress,
+        },
+        json: true,
+      };
+
+      return rp(requestOptions);
+    })
+    .then((data) => {
+      res.json({
+        note: "New block mined & broadcast successfully",
+        block: newBlock,
+      });
+    });
 });
 
 //*! BUILDING DECENTRALIZED NETWORK
